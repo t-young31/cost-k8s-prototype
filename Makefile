@@ -1,13 +1,16 @@
 SHELL := /bin/bash
 .PHONY: *
 
-all: cluster open-cost
+all: cluster opencost
 
 cluster:
 	. init.sh && ./create_cluster.sh
 
-open-cost:
+opencost:
 	. init.sh && cd opencost && ./install.sh
+
+kubecost:
+	. init.sh && cd kubecost && ./install.sh
 
 destroy:
 	. init.sh && \
