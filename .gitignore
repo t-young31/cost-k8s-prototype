@@ -4,6 +4,8 @@
 *.env*
 !.env.sample
 *config*.y*ml
+# Allow configmaps
+!configmap.yaml
 # Tempoary files
 tmp*
 temp*
