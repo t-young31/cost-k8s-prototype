@@ -1,6 +1,6 @@
 # cost-k8s-prototype
 
-# Setup
+## Setup
 Get a token from https://www.kubecost.com/install.html
 
 ## Usage
