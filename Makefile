@@ -7,7 +7,7 @@ cluster:
 	. init.sh && ./create_cluster.sh
 
 open-cost:
-	. init.sh && ./install_opencost.sh
+	. init.sh && cd opencost && ./install.sh
 
 destroy:
 	. init.sh && \
