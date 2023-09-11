@@ -1,9 +1,13 @@
 SHELL := /bin/bash
 .PHONY: *
 
-all:
-	. init.sh && \
-	./create_cluster.sh
+all: cluster open-cost
+
+cluster:
+	. init.sh && ./create_cluster.sh
+
+open-cost:
+	. init.sh && ./install_opencost.sh
 
 destroy:
 	. init.sh && \
