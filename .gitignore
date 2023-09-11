@@ -1,0 +1,9 @@
+# IntelliJ
+.idea/
+# Secrets
+*.env*
+!.env.sample
+*config*.y*ml
+# Tempoary files
+tmp*
+temp*
