@@ -10,7 +10,7 @@ function create_cluster(){
     --api-port 6550 \
     --servers 1 \
     --agents 1 \
-    --port "${DEV_CLUSTER_LOAD_BALANCER_PORT}:80@loadbalancer" \
+    --port "${DEV_CLUSTER_LOAD_BALANCER_PORT}:443@loadbalancer" \
     --wait
 }
 

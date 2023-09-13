@@ -6,13 +6,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func emailFromContext(c *gin.Context) string {
+	return c.Request.Header.Get("x-forwarded-email")
+}
+
 func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*")
 
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl.html", gin.H{
-			"title": "OCost",
+			"title": "Hello " + emailFromContext(c),
 		})
 	})
 

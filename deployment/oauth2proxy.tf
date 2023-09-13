@@ -12,15 +12,56 @@ resource "helm_release" "oauth2proxy" {
   }
 
   set {
+    name  = "config.clientID"
+    value = var.aad_application_id
+  }
+
+  set {
+    name  = "config.clientSecret"
+    value = var.aad_application_secret
+  }
+
+  set {
+    name  = "service.portNumber"
+    value = 80
+  }
+
+  set {
     name = "config.configFile"
     value = templatefile("${path.module}/oauth2proxy.template.cfg",
       {
         oidc_issuer_url = "https://login.microsoftonline.com/${var.aad_tenant_id}/v2.0"
-        redirect_url    = "https://${var.app_fqdn}:${var.https_port}/oauth2/callback"
-        client_id       = var.aad_application_id
-        client_secret   = var.aad_application_secret
+        redirect_url    = "${local.app_url}/oauth2/callback"
+        app_url         = local.app_internal_url
       }
     )
+  }
+}
+
+resource "kubernetes_ingress_v1" "oauth2proxy" {
+  metadata {
+    name      = "oauth2-proxy"
+    namespace = helm_release.oauth2proxy.namespace
+  }
+
+  spec {
+    rule {
+      host = var.app_fqdn
+      http {
+        path {
+          path      = "/"
+          path_type = "ImplementationSpecific"
+          backend {
+            service {
+              name = helm_release.oauth2proxy.name
+              port {
+                number = 80
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
 
