@@ -24,4 +24,7 @@ export "${args[@]}"
 
 if [ "${ENVIRONMENT:-}" = "dev" ]; then
     export KUBE_CONFIG_PATH="${SCRIPT_DIR}/${DEV_CLUSTER_CONFIG_FILE}"
+    export TF_VAR_https_port="$DEV_CLUSTER_LOAD_BALANCER_PORT"
+else
+    export TF_VAR_https_port="443"
 fi

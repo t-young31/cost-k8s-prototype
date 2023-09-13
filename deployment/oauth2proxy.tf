@@ -16,7 +16,7 @@ resource "helm_release" "oauth2proxy" {
     value = templatefile("${path.module}/oauth2proxy.template.cfg",
       {
         oidc_issuer_url = "https://login.microsoftonline.com/${var.aad_tenant_id}/v2.0"
-        redirect_url    = "TODO"
+        redirect_url    = "https://${var.app_fqdn}:${var.https_port}/oauth2/callback"
         client_id       = var.aad_application_id
         client_secret   = var.aad_application_secret
       }
