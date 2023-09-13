@@ -27,3 +27,8 @@ variable "https_port" {
   type        = string
   description = "HTTPS port for ingress. For local development it should be the loadbalancers port"
 }
+
+variable "app_image" {
+  type        = string
+  description = "URI of the app image to deploy. e.g. ocost or <some url>"
+}

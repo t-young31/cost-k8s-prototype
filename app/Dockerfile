@@ -1,5 +1,8 @@
 FROM golang:1.20.7-alpine
 
+# TODO: go binary rather than curl, saving a few MB
+RUN apk --no-cache add curl
+
 WORKDIR /app
 RUN unset GOPATH
 
@@ -13,5 +16,8 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 
 ENV PORT="8080"
 ENV GIN_MODE="release"
+
+HEALTHCHECK --interval=10s --timeout=1s \
+  CMD curl --fail "http://0.0.0.0:${PORT}/ping" || exit 1
 
 CMD ["/app/main"]

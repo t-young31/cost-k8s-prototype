@@ -23,6 +23,12 @@ all:
 dev:
 	ENVIRONMENT=dev . init.sh && \
 	./dev/create_cluster.sh && \
+	(cd app && make build) && \
+	./dev/import_app_image.sh && \
+	$(call terraform-apply, ./deployment)
+
+dev-deployment:
+	ENVIRONMENT=dev . init.sh && \
 	$(call terraform-apply, ./deployment)
 
 destroy:

@@ -28,3 +28,5 @@ if [ "${ENVIRONMENT:-}" = "dev" ]; then
 else
     export TF_VAR_https_port="443"
 fi
+
+export TF_VAR_app_image="$APP_IMAGE"

@@ -11,6 +11,7 @@
 # Tempoary files
 tmp*
 temp*
+!templates
 # Terraform
 *tfstate*
 .terraform
