@@ -1,16 +1,29 @@
 SHELL := /bin/bash
 .PHONY: *
 
-all: cluster opencost
+define terraform-apply
+	. init.sh $$ \
+    echo "Running: terraform apply on $(1)" && \
+    cd $(1) && \
+	terraform init -upgrade && \
+	terraform validate && \
+	terraform apply --auto-approve
+endef
 
-cluster:
-	. init.sh && ./create_cluster.sh
+define terraform-destroy
+	. init.sh $$ \
+    echo "Running: terraform destroy on $(1)" && \
+    cd $(1) && \
+	terraform apply -destroy --auto-approve
+endef
 
-opencost:
-	. init.sh && cd opencost && ./install.sh
+all:
+	@echo "Please select a target"; exit 1
 
-kubecost:
-	. init.sh && cd kubecost && ./install.sh
+dev:
+	ENVIRONMENT=dev . init.sh && \
+	./dev/create_cluster.sh && \
+	$(call terraform-apply, ./deployment)
 
 destroy:
 	. init.sh && \

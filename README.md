@@ -1,19 +1,15 @@
 # cost-k8s-prototype
+> **Warning**
+> Not production ready. Use at your own risk!
 
-## Setup
-Get a token from https://www.kubecost.com/install.html
 
 ## Usage
-Create a `.env` file from `.env.sample`
+Create a `.env` file from `.env.sample` and a `opencost.json` containing customized costs
 
 ```bash
-make
-# Forward some ports, view some dashboards
-# Clean up by destroying the cluster
-make destroy
+make dev
 ```
 
 ## 🔗 Links
 
 - https://www.opencost.io/docs/
-- https://docs.kubecost.com/

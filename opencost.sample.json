@@ -1,0 +1,11 @@
+{
+    "provider": "custom",
+    "description": "Example pricing",
+    "CPU": "1.23",
+    "RAM": "0.45",
+    "storage": "0.67",
+    "loadBalancer": "0.0",
+    "zoneNetworkEgress": "0.08",
+    "regionNetworkEgress": "0.09",
+    "internetNetworkEgress": "0.01"
+  }

@@ -4,8 +4,13 @@
 *.env*
 !.env.sample
 *config*.y*ml
+*.json
+!opencost.sample.json
 # Allow configmaps
 !configmap.yaml
 # Tempoary files
 tmp*
 temp*
+# Terraform
+*tfstate*
+.terraform

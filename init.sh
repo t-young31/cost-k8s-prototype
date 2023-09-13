@@ -11,6 +11,17 @@ if [ ! -f "$env_filepath" ]; then
     exit 1
 fi
 
+opencost_json_filepath="$SCRIPT_DIR/opencost.json"
+
+if [ ! -f "$opencost_json_filepath" ]; then
+    echo "$opencost_json_filepath not found. Please create it from opencost.sample.json"
+    exit 1
+fi
+
 echo "Exporting variables in ${env_filepath} file into the environment"
 read -ra args < <(grep -v '^#' "$env_filepath" | xargs)
 export "${args[@]}"
+
+if [ "${ENVIRONMENT:-}" = "dev" ]; then
+    export KUBE_CONFIG_PATH="${SCRIPT_DIR}/${DEV_CLUSTER_CONFIG_FILE}"
+fi
