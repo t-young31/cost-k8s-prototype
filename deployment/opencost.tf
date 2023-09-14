@@ -18,6 +18,11 @@ resource "helm_release" "opencost" {
   wait       = true
 
   set {
+    name  = "opencost.ui.enabled"
+    value = false
+  }
+
+  set {
     name  = "opencost.prometheus.internal.serviceName"
     value = "${helm_release.prometheus.name}-server"
   }

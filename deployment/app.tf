@@ -36,6 +36,10 @@ resource "kubernetes_deployment" "ocost" {
             name  = "GROUP_MAP_PATH"
             value = local.app_group_map_path
           }
+          env {
+            name  = "OPENCOST_URL"
+            value = "http://${helm_release.opencost.name}.${helm_release.opencost.namespace}.svc.cluster.local:9003"
+          }
           port {
             name           = "http"
             protocol       = "TCP"

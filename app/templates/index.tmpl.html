@@ -12,23 +12,34 @@
       <a class="navbar-item" href="/">
         <p class="title is-2" style="color:#0888b0; margin-bottom: -22px">OCost</p>
       </a>
+    </div>
 
-    </div>
-    <div style="background-color:#0888b0; height: 10px">
-    </div>
   </nav>
+  <div class="container" style="background-color:#0888b0; height: 10px; max-width: 1344px;">
+  </div>
 
-  <section class="section">
+  <section class="section pt-5">
     <div class="container">
-      <h1 class="title">
-        {{ .title }}
-      </h1>
-      {{range .namespaces}}
-      <h2>
-        {{ . }}
-      </h2>
-      {{end}}
+
+      <table class="table is-hoverable is-fullwidth">
+        <thead>
+          <tr>
+            <th><abbr>Namespace</abbr></th>
+            <th>Cost (£) / month</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          {{range .tableRow}}
+          <tr>
+            <th>{{.namespace}}</th>
+            <td>{{.costPerMonth}}</td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+
     </div>
   </section>
-  </body>
+</body>
 </html>
