@@ -5,8 +5,8 @@
 !.env.sample
 *config*.y*ml
 *.json
-!opencost.sample.json
-group_map.yaml
+!ocost_config.sample.yaml
+!.pre-commit-config.yaml
 # Allow configmaps
 !configmap.yaml
 # Tempoary files

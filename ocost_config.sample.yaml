@@ -1,0 +1,22 @@
+---
+# OCost config file. This should be checked into a private repository
+
+groups:
+  # AAD group id -> k8s namespace mapping
+  00000000-0000-0000-0000-000000000000:
+    - namespaceA
+    - namespaceB
+  00000000-0000-0000-0000-000000000001:
+    - namespaceC
+
+opencost:
+  # Pricing in £ / hour
+  # See: https://www.opencost.io/docs/configuration/on-prem
+  provider: custom
+  description: Example pricing
+  CPU: "0.23"                    # / vCPU
+  RAM: "0.045"                   # / GB
+  storage: "0.0067"              # / GB
+  zoneNetworkEgress: "0.08"      # / GB
+  regionNetworkEgress: "0.09"    # / GB
+  internetNetworkEgress: "0.01"  # / GB

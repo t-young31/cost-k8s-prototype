@@ -101,10 +101,6 @@ func removeDuplicates(strings []string) []string {
 	return list
 }
 
-func emailFromHeader(c *gin.Context) string {
-	return c.Request.Header.Get("x-forwarded-email")
-}
-
 func env(key string) string {
 	value := os.Getenv(key)
 	if len(value) == 0 {
@@ -172,7 +168,7 @@ func tableRows(visibleNamespaces Namespaces) []TableRow {
 	for _, namespaceMap := range queryOpenCostData() {
 		for _, namespaceData := range namespaceMap {
 			if !visibleNamespaces.Contains(namespaceData.Name) {
-				fmt.Printf("%v was not visible\n", namespaceData.Name)
+				// fmt.Printf("%v was not visible\n", namespaceData.Name)
 				continue
 			}
 			row := TableRow{
@@ -208,5 +204,5 @@ func main() {
 		})
 	})
 
-	router.Run()
+	_ = router.Run()
 }

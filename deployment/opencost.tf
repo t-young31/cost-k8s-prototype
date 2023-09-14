@@ -5,7 +5,7 @@ resource "kubernetes_config_map" "opencost_config" {
   }
 
   data = {
-    "default.json" = file("${path.module}/../opencost.json")
+    "default.json" = jsonencode(local.ocost_config["opencost"])
   }
 }
 

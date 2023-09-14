@@ -93,7 +93,7 @@ resource "kubernetes_secret" "ocost_group_map" {
   }
 
   data = {
-    "group_map.json" = jsonencode(yamldecode(file("${path.module}/../group_map.yaml")))
+    "group_map.json" = jsonencode(local.ocost_config["groups"])
   }
 
   type = "Opaque"
