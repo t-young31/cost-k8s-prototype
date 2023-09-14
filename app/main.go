@@ -146,6 +146,7 @@ func userVisibleNamespaces(groups string) Namespaces {
 	return removeDuplicates(namespaces)
 }
 
+// Query the OpenCost API for data given a specific time period
 func queryOpenCostData() []map[string]OpenCostNamespaceData {
 	u, err := url.ParseRequestURI(env("OPENCOST_URL"))
 	assertNotNil(err)
@@ -162,6 +163,7 @@ func queryOpenCostData() []map[string]OpenCostNamespaceData {
 	return responseJson.Data
 }
 
+// Get the table rows for the namespaces visible to the current user
 func tableRows(visibleNamespaces Namespaces) []TableRow {
 	var tableRows []TableRow
 
@@ -181,12 +183,13 @@ func tableRows(visibleNamespaces Namespaces) []TableRow {
 	return tableRows
 }
 
+// HTML index page
 func index(context *gin.Context) {
 	groupsHeader := context.Request.Header.Get("x-forwarded-groups")
-	namespaces := userVisibleNamespaces(groupsHeader)
+	visibleNamespaces := userVisibleNamespaces(groupsHeader)
 
 	context.HTML(http.StatusOK, "index.tmpl.html", gin.H{
-		"tableRows": tableRows((namespaces)),
+		"tableRows": tableRows(visibleNamespaces),
 	})
 }
 
