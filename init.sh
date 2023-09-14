@@ -12,9 +12,14 @@ if [ ! -f "$env_filepath" ]; then
 fi
 
 opencost_json_filepath="$SCRIPT_DIR/opencost.json"
-
 if [ ! -f "$opencost_json_filepath" ]; then
     echo "$opencost_json_filepath not found. Please create it from opencost.sample.json"
+    exit 1
+fi
+
+group_map_filepath="$SCRIPT_DIR/group_map.yaml"
+if [ ! -f "$group_map_filepath" ]; then
+    echo "$group_map_filepath not found. Please create it from group_map.sample.json"
     exit 1
 fi
 

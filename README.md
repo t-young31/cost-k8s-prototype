@@ -25,6 +25,8 @@
 
   0.7 Find the application ID from the `Overview` pane of the application
 
+  0.8 Add the groups claim to the returned token in the `Token configuration` pane by selecting `Security Groups` then add
+
 </details>
 
 1. Create a `.env` file from `.env.sample` and a `opencost.json` containing customized costs

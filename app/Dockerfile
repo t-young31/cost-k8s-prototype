@@ -1,5 +1,9 @@
 FROM golang:1.20.7-alpine
 
+# TODO: disable
+RUN apk --no-cache add nano
+
+
 # TODO: go binary rather than curl, saving a few MB
 RUN apk --no-cache add curl
 
@@ -16,8 +20,10 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 
 ENV PORT="8080"
 ENV GIN_MODE="release"
+ENV GROUP_MAP_PATH="/app/group_map.json"
 
 HEALTHCHECK --interval=10s --timeout=1s \
   CMD curl --fail "http://0.0.0.0:${PORT}/ping" || exit 1
 
+# CMD ["tail", "-f", "/dev/null"]
 CMD ["/app/main"]

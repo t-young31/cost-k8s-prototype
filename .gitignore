@@ -6,6 +6,7 @@
 *config*.y*ml
 *.json
 !opencost.sample.json
+group_map.yaml
 # Allow configmaps
 !configmap.yaml
 # Tempoary files

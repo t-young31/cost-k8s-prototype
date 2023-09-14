@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ..
+    ports:
+      - "8080:8080"
+    image: ocost
+    command:
+      - go
+      - run
+      - main.go
+    environment:
+      PORT: "8080"
+      GROUP_MAP_PATH: "/tmp/group_map.test.json"
+    volumes:
+      - type: bind
+        source: ./group_map.test.json
+        target: /tmp/group_map.test.json
+      - type: bind
+        source: ..
+        target: /app/

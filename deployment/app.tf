@@ -32,10 +32,26 @@ resource "kubernetes_deployment" "ocost" {
             name  = "PORT"
             value = local.app_container_port
           }
+          env {
+            name  = "GROUP_MAP_PATH"
+            value = local.app_group_map_path
+          }
           port {
             name           = "http"
             protocol       = "TCP"
             container_port = local.app_container_port
+          }
+          volume_mount {
+            name       = "group-map"
+            mount_path = local.app_group_map_path
+            read_only  = true
+            sub_path   = local.app_group_map_filename
+          }
+        }
+        volume {
+          name = "group-map"
+          secret {
+            secret_name = kubernetes_secret.ocost_group_map.metadata[0].name
           }
         }
       }
@@ -46,7 +62,7 @@ resource "kubernetes_deployment" "ocost" {
 resource "kubernetes_service" "ocost" {
   metadata {
     name      = "ocost"
-    namespace = kubernetes_namespace.cost.metadata[0].name
+    namespace = kubernetes_deployment.ocost.metadata[0].name
     labels = {
       app = "ocost"
     }
@@ -64,4 +80,17 @@ resource "kubernetes_service" "ocost" {
 
     type = "ClusterIP"
   }
+}
+
+resource "kubernetes_secret" "ocost_group_map" {
+  metadata {
+    name      = "ocost-group-map"
+    namespace = kubernetes_namespace.cost.metadata[0].name
+  }
+
+  data = {
+    "group_map.json" = jsonencode(yamldecode(file("${path.module}/../group_map.yaml")))
+  }
+
+  type = "Opaque"
 }
