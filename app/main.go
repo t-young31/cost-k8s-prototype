@@ -14,62 +14,73 @@ import (
 var groupMap map[string][]string // Global
 
 type TableRow struct {
-	namespace    string
-	costPerMonth float64 // £
+	Namespace    string
+	CostPerMonth float64 // £
+}
+
+type Namespaces []string
+
+func (namespaces Namespaces) Contains(query string) bool {
+	for _, namespace := range namespaces {
+		if namespace == query {
+			return true
+		}
+	}
+	return false
+}
+
+type OpenCostAPIResponse struct {
+	Code   int                                `json:"code"`
+	Status string                             `json:"status"`
+	Data   []map[string]OpenCostNamespaceData `json:"data"`
 }
 
 type OpenCostNamespaceData struct {
-	name                           string
-	properties                     map[string]string
-	window                         map[string]string
-	start                          string
-	end                            string
-	minutes                        int
-	cpuCores                       float64
-	cpuCoreRequestAverage          float64
-	cpuCoreUsageAverage            float64
-	cpuCoreHours                   float64
-	cpuCost                        float64
-	cpuCostAdjustment              int
-	cpuEfficiency                  float64
-	gpuCount                       int
-	gpuHours                       int
-	gpuCost                        int
-	gpuCostAdjustment              int
-	networkTransferBytes           float64
-	networkReceiveBytes            float64
-	networkCost                    int
-	networkCrossZoneCost           int
-	networkCrossRegionCost         int
-	networkInternetCost            int
-	networkCostAdjustment          int
-	loadBalancerCost               int
-	loadBalancerCostAdjustment     int
-	pvBytes                        float64
-	pvByteHours                    float64
-	pvCost                         int
-	pvs                            map[string]string
-	pvCostAdjustment               int
-	ramBytes                       float64
-	ramByteRequestAverage          float64
-	ramByteUsageAverage            float64
-	ramByteHours                   float64
-	ramCost                        float64
-	ramCostAdjustment              int
-	ramEfficiency                  float64
-	externalCost                   int
-	sharedCost                     int
-	totalCost                      float64
-	totalEfficiency                float64
-	proportionalAssetResourceCosts map[string]string
-	lbAllocations                  string
-	sharedCostBreakdown            map[string]string
-}
-
-type OpenCostData struct {
-	code   int
-	status string
-	data   []OpenCostNamespaceData
+	Name                       string            `json:"name"`
+	Properties                 map[string]string `json:"properties"`
+	Window                     map[string]string `json:"window"`
+	Start                      string            `json:"start"`
+	End                        string            `json:"end"`
+	Minutes                    int               `json:"minutes"`
+	CpuCores                   float64           `json:"cpuCores"`
+	CpuCoreRequestAverage      float64           `json:"cpuCoreRequestAverage"`
+	CpuCoreUsageAverage        float64           `json:"cpuCoreUsageAverage"`
+	CpuCoreHours               float64           `json:"cpuCoreHours"`
+	CpuCost                    float64           `json:"cpuCost"`
+	CpuCostAdjustment          int               `json:"cpuCostAdjustment"`
+	CpuEfficiency              float64           `json:"cpuEfficiency"`
+	GpuCount                   int               `json:"gpuCount"`
+	GpuHours                   int               `json:"gpuHours"`
+	GpuCost                    int               `json:"gpuCost"`
+	GpuCostAdjustment          int               `json:"gpuCostAdjustment"`
+	NetworkTransferBytes       float64           `json:"networkTransferBytes"`
+	NetworkReceiveBytes        float64           `json:"networkReceiveBytes"`
+	NetworkCost                int               `json:"networkCost"`
+	NetworkCrossZoneCost       int               `json:"networkCrossZoneCost"`
+	NetworkCrossRegionCost     int               `json:"networkCrossRegionCost"`
+	NetworkInternetCost        int               `json:"networkInternetCost"`
+	NetworkCostAdjustment      int               `json:"networkCostAdjustment"`
+	LoadBalancerCost           int               `json:"loadBalancerCost"`
+	LoadBalancerCostAdjustment int               `json:"loadBalancerCostAdjustment"`
+	PvBytes                    float64           `json:"pvBytes"`
+	PvByteHours                float64           `json:"pvByteHours"`
+	PvCost                     int               `json:"pvCost"`
+	//Pvs string `json:"pvs"`
+	PvCostAdjustment               int               `json:"pvCostAdjustment"`
+	RamBytes                       float64           `json:"ramBytes"`
+	RamByteRequestAverage          float64           `json:"ramByteRequestAverage"`
+	RamByteUsageAverage            float64           `json:"ramByteUsageAverage"`
+	RamByteHours                   float64           `json:"ramByteHours"`
+	RamCost                        float64           `json:"ramCost"`
+	RamCostAdjustment              int               `json:"ramCostAdjustment"`
+	RamEfficiency                  float64           `json:"ramEfficiency"`
+	ExternalCost                   int               `json:"externalCost"`
+	SharedCost                     int               `json:"sharedCost"`
+	TotalCost                      float64           `json:"totalCost"`
+	TotalEfficiency                float64           `json:"totalEfficiency"`
+	ProportionalAssetResourceCosts map[string]string `json:"proportionalAssetResourceCosts"`
+	LbAllocations                  map[string]string `json:"lbAllocations"`
+	SharedCostBreakdown            map[string]string `json:"sharedCostBreakdown"`
 }
 
 func assertNotNil(e error) {
@@ -102,6 +113,15 @@ func env(key string) string {
 	return value
 }
 
+func getJson(fullUrl string, target interface{}) error {
+	response, err := http.Get(fullUrl)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+	return json.NewDecoder(response.Body).Decode(target)
+}
+
 // Read a AAD group ID -> namespaces map defined in a json file
 func groupMapFromFile(filepath string) map[string][]string {
 	if !strings.HasSuffix(filepath, ".json") {
@@ -119,8 +139,8 @@ func groupMapFromFile(filepath string) map[string][]string {
 }
 
 // Get a list of unique namespaces visible to a user based on a comma separated list of groups
-func userVisibleNamespaces(groups string) []string {
-	var namespaces []string
+func userVisibleNamespaces(groups string) Namespaces {
+	var namespaces Namespaces
 	for _, groupId := range strings.Split(groups, ",") {
 		groupNamespaces, ok := groupMap[groupId]
 		if ok {
@@ -130,27 +150,38 @@ func userVisibleNamespaces(groups string) []string {
 	return removeDuplicates(namespaces)
 }
 
-func tableRows(namespaces []string) []TableRow {
-
+func queryOpenCostData() []map[string]OpenCostNamespaceData {
 	u, err := url.ParseRequestURI(env("OPENCOST_URL"))
 	assertNotNil(err)
 	u.Path = "/allocation"
 	q := u.Query()
-	q.Set("window", "1m")
+	q.Set("window", "31d")
 	q.Set("aggregate", "namespace")
 	u.RawQuery = q.Encode()
 
+	var responseJson OpenCostAPIResponse
+	if err := getJson(u.String(), &responseJson); err != nil {
+		fmt.Printf("Failed to get JSON from %v. %#v\n", u.String(), err)
+	}
+	return responseJson.Data
+}
+
+func tableRows(visibleNamespaces Namespaces) []TableRow {
 	var tableRows []TableRow
 
-	//allocation   -d window=7d   -d aggregate=namespace   -d accumulate=false   -d resolution=1m
-
-	resp, err := http.Get(u.String())
-	if err != nil {
-		return tableRows
+	for _, namespaceMap := range queryOpenCostData() {
+		for _, namespaceData := range namespaceMap {
+			if !visibleNamespaces.Contains(namespaceData.Name) {
+				fmt.Printf("%v was not visible\n", namespaceData.Name)
+				continue
+			}
+			row := TableRow{
+				Namespace:    namespaceData.Name,
+				CostPerMonth: namespaceData.TotalCost,
+			}
+			tableRows = append(tableRows, row)
+		}
 	}
-	fmt.Println(resp.Body)
-
-	// data =
 	return tableRows
 }
 
@@ -159,8 +190,7 @@ func index(context *gin.Context) {
 	namespaces := userVisibleNamespaces(groupsHeader)
 
 	context.HTML(http.StatusOK, "index.tmpl.html", gin.H{
-		"title":      "Hello " + emailFromHeader(context),
-		"namespaces": namespaces,
+		"tableRows": tableRows((namespaces)),
 	})
 }
 
