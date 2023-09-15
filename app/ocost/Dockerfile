@@ -19,7 +19,7 @@ ENV GIN_MODE="release"
 ENV GROUP_MAP_PATH="/app/group_map.json"
 ENV OPENCOST_URL="http://localhost:9003"
 
-HEALTHCHECK --interval=10s --timeout=1s \
+HEALTHCHECK --interval=10s --timeout=30s \
   CMD curl --fail "http://0.0.0.0:${PORT}/ping" || exit 1
 
 # CMD ["tail", "-f", "/dev/null"]

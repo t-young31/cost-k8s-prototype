@@ -23,6 +23,12 @@ services:
       - type: bind
         source: ../ocost/
         target: /app/
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://0.0.0.0:8080/ping"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 5s
     depends_on:
       - opencost
 
