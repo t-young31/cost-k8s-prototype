@@ -26,11 +26,12 @@ services:
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://0.0.0.0:8080/ping"]
       interval: 5s
-      timeout: 30s
-      retries: 5
-      start_period: 20s
+      timeout: 60s
+      retries: 10
+      start_period: 5s
     depends_on:
-      - opencost
+      opencost:
+        condition: service_healthy
 
   opencost:
     build:
@@ -43,6 +44,12 @@ services:
       - cmd/mockopencost/main.go
     environment:
       PORT: "8081"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://0.0.0.0:8081/allocation"]
+      interval: 5s
+      retries: 10
+      timeout: 60s
+      start_period: 10s
 
   curl:
     build:
