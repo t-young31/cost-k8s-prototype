@@ -29,13 +29,13 @@ repos:
       - id: golangci-lint
         name: go lint
         language: system
-        entry: bash -c 'cd app && golangci-lint run'
+        entry: bash -c 'cd app/ocost && golangci-lint run'
         pass_filenames: false
         types: [go]
 
       - id: go-test
         name: go test
         language: system
-        entry: bash -c 'cd app && go test -v'
+        entry: bash -c 'cd app/ocost && go test -v'
         pass_filenames: false
         types: [go]

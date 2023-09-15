@@ -1,9 +1,5 @@
 FROM golang:1.20.7-alpine
 
-# TODO: disable
-RUN apk --no-cache add nano
-
-
 # TODO: go binary rather than curl, saving a few MB
 RUN apk --no-cache add curl
 

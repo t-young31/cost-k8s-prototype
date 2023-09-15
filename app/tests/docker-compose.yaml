@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  app:
+  ocost:
     build:
-      context: ..
+      context: ../ocost
     ports:
       - "8080:8080"
     image: ocost
@@ -13,11 +13,43 @@ services:
       - main.go
     environment:
       PORT: "8080"
+      OPENCOST_URL: "http://opencost:8081"
       GROUP_MAP_PATH: "/tmp/group_map.test.json"
     volumes:
       - type: bind
         source: ./group_map.test.json
         target: /tmp/group_map.test.json
       - type: bind
-        source: ..
+        source: ../ocost/
         target: /app/
+    depends_on:
+      - opencost
+
+  opencost:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mockopencost
+    command:
+      - go
+      - run
+      - cmd/mockopencost/main.go
+    environment:
+      PORT: "8081"
+
+  curl:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      - go
+      - run
+      - cmd/curl/main.go
+    environment:
+      OCOST_URL: "http://ocost:8080"
+      # Values from group_map.test.json
+      GROUP: "00000000-0000-0000-0000-000000000000"
+      EXPECTED_NAMESPACE: "kube-system"
+    depends_on:
+      ocost:
+        condition: service_healthy
