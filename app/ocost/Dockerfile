@@ -11,7 +11,7 @@ RUN go mod download && go mod verify
 
 COPY . .
 RUN --mount=type=cache,target=/root/.cache/go-build \
-    go build -v -o main . && \
+    go build -v -o main cmd/main.go && \
     chmod +x main
 
 ENV PORT="8080"

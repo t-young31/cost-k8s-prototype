@@ -36,6 +36,6 @@ repos:
       - id: go-test
         name: go test
         language: system
-        entry: bash -c 'cd app/ocost && go test -v'
+        entry: bash -c 'cd app/ocost/cmd && go test -v'
         pass_filenames: false
         types: [go]

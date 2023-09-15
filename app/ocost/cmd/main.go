@@ -9,13 +9,15 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 var groupMap map[string][]string // Global
 
 type TableRow struct {
 	Namespace    string
-	CostPerMonth float64 // £
+	CostPerMonth string // £
 }
 
 type Namespaces []string
@@ -143,11 +145,13 @@ func userVisibleNamespaces(groups string) Namespaces {
 			namespaces = append(namespaces, groupNamespaces...)
 		}
 	}
+
+	log.Debug().Msgf("Found [%v] namespaces visible to the user", namespaces)
 	return removeDuplicates(namespaces)
 }
 
 // Query the OpenCost API for data given a specific time period
-func queryOpenCostData() []map[string]OpenCostNamespaceData {
+func openCostDataForPreviousMonth() []map[string]OpenCostNamespaceData {
 	u, err := url.ParseRequestURI(env("OPENCOST_URL"))
 	assertNotNil(err)
 	u.Path = "/allocation"
@@ -160,6 +164,8 @@ func queryOpenCostData() []map[string]OpenCostNamespaceData {
 	if err := getJson(u.String(), &responseJson); err != nil {
 		fmt.Printf("Failed to get JSON from %v. %#v\n", u.String(), err)
 	}
+
+	log.Debug().Msgf("Found namespace data: [%v]", responseJson.Data)
 	return responseJson.Data
 }
 
@@ -167,15 +173,15 @@ func queryOpenCostData() []map[string]OpenCostNamespaceData {
 func tableRows(visibleNamespaces Namespaces) []TableRow {
 	var tableRows []TableRow
 
-	for _, namespaceMap := range queryOpenCostData() {
+	for _, namespaceMap := range openCostDataForPreviousMonth() {
 		for _, namespaceData := range namespaceMap {
 			if !visibleNamespaces.Contains(namespaceData.Name) {
-				// fmt.Printf("%v was not visible\n", namespaceData.Name)
+				log.Debug().Msgf("[%v] was not visible to the user. Skipping", namespaceData.Name)
 				continue
 			}
 			row := TableRow{
 				Namespace:    namespaceData.Name,
-				CostPerMonth: namespaceData.TotalCost,
+				CostPerMonth: fmt.Sprintf("%.2f", namespaceData.TotalCost),
 			}
 			tableRows = append(tableRows, row)
 		}
@@ -186,6 +192,9 @@ func tableRows(visibleNamespaces Namespaces) []TableRow {
 // HTML index page
 func index(context *gin.Context) {
 	groupsHeader := context.Request.Header.Get("x-forwarded-groups")
+	if groupsHeader == "" {
+		log.Error().Msg("No x-forwarded-groups present in the request")
+	}
 	visibleNamespaces := userVisibleNamespaces(groupsHeader)
 
 	context.HTML(http.StatusOK, "index.tmpl.html", gin.H{
@@ -194,6 +203,11 @@ func index(context *gin.Context) {
 }
 
 func main() {
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	if env("DEBUG") == "true" {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	}
+
 	groupMap = groupMapFromFile(env("GROUP_MAP_PATH"))
 
 	router := gin.Default()

@@ -10,8 +10,9 @@ services:
     command:
       - go
       - run
-      - main.go
+      - cmd/main.go
     environment:
+      DEBUG: "true"
       PORT: "8080"
       OPENCOST_URL: "http://opencost:8081"
       GROUP_MAP_PATH: "/tmp/group_map.test.json"
