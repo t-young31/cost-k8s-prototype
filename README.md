@@ -36,6 +36,7 @@ users dependent on their assigned groups in Azure Active Directory (AAD).
 
 2. Create a `ocost_config.yaml` from `ocost.config.yaml`
 
+3. Run
 ```bash
 make dev
 ```
@@ -43,7 +44,7 @@ make dev
 
 ## Contributing
 
-- Fork this repository and make sure [pre-commit](https://pre-commit.com/index.html) is installed (`pre-commit install`)
+- Fork this repository and make sure [pre-commit](https://pre-commit.com/index.html) is installed (`pre-commit install`).
 - Use the `[issue-number]-[issue-title]` branching convention and favour short-lived branches.
 - Raise pull request (PRs) against `main` for review.
 - The person creating the PR is responsible for merging and deleting the branch.
